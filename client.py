@@ -27,4 +27,14 @@ B = pickle.loads(server_data)
 K = (B ** a) % p
 print(f"Общий секрет (клиент): {K}")
 
+# Шифрование сообщения
+message = "Привет, сервер!"
+encrypted_message = ''.join([chr(ord(char) ^ K) for char in message])
+sock.send(pickle.dumps(encrypted_message))
+
+# Получение зашифрованного ответа от сервера
+encrypted_response = pickle.loads(sock.recv(1024))
+decrypted_response = ''.join([chr(ord(char) ^ K) for char in encrypted_response])
+print(f"Ответ от сервера: {decrypted_response}")
+
 sock.close()

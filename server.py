@@ -29,4 +29,14 @@ conn.send(pickle.dumps(B))
 K = (A ** b) % p
 print(f"Общий секрет (сервер): {K}")
 
+# Получение зашифрованного сообщения от клиента
+encrypted_message = pickle.loads(conn.recv(1024))
+decrypted_message = ''.join([chr(ord(char) ^ K) for char in encrypted_message])
+print(f"Сообщение от клиента: {decrypted_message}")
+
+# Шифрование ответа
+response = "Привет, клиент!"
+encrypted_response = ''.join([chr(ord(char) ^ K) for char in response])
+conn.send(pickle.dumps(encrypted_response))
+
 conn.close()
