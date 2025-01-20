@@ -1,12 +1,20 @@
 import socket
 import pickle
+import os
+
+# Загрузка или генерация ключей
+if os.path.exists("client_private_key.txt"):
+    with open("client_private_key.txt", "r") as f:
+        a = int(f.read())
+else:
+    a = 6  # Секретный ключ клиента
+    with open("client_private_key.txt", "w") as f:
+        f.write(str(a))
 
 # Параметры для протокола Диффи-Хеллмана
 p = 23  # Общее простое число
 g = 5   # Общий базовый показатель
 
-# Секретный ключ клиента
-a = 6
 A = (g ** a) % p  # Публичный ключ клиента
 
 # Подключение к серверу
@@ -26,15 +34,5 @@ B = pickle.loads(server_data)
 # Вычисление общего секрета
 K = (B ** a) % p
 print(f"Общий секрет (клиент): {K}")
-
-# Шифрование сообщения
-message = "Привет, сервер!"
-encrypted_message = ''.join([chr(ord(char) ^ K) for char in message])
-sock.send(pickle.dumps(encrypted_message))
-
-# Получение зашифрованного ответа от сервера
-encrypted_response = pickle.loads(sock.recv(1024))
-decrypted_response = ''.join([chr(ord(char) ^ K) for char in encrypted_response])
-print(f"Ответ от сервера: {decrypted_response}")
 
 sock.close()
